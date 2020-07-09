@@ -7,6 +7,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
   <title>小作坊 - 免费稳定图片外链服务</title>
+  <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
   <meta name="keywords" content="图片外链,稳定图床,免费图床,网络图片,图片库,相册,网络相册,批量上传,批量生成">
   <meta name="description" itemprop="description"
     content="永久免费图床，稳定图片外链；支持批量上传,即时预览,不限制流量,不限制外链数,永久保存,阿里巴巴图片服务器,全网CDN图床,高速稳定,支持网页,手机上传,无需插件,支持JPG,GIF,PNG等文件格式" />
@@ -220,7 +221,7 @@
       </div>
       <div class="footer text-center">
         <p class="title1">温馨提示：本站不存储且无权管理上传的图源，图源均存放在阿里云服务器，请勿上传违反法规图源。</p>
-        <a class="footer-text">© 2020 Powered by <a  target="_blank" href="https://www.tickmao.com"> Tickmao</a></a>
+        <a class="footer-text">© 2020 Powered by <a target="_blank" href="https://www.tickmao.com"> Tickmao</a></a>
       </div>
     </div>
   </div>
@@ -283,6 +284,8 @@
     function file_upload(files) {
       if (files.length == 0) return alert('请选择图片文件！');
       for (var j = 0, len = files.length; j < len; j++) {
+
+
         console.log(files[j]);
         let imageData = new FormData();
         imageData.append("file", 'multipart');
@@ -298,7 +301,7 @@
           // 图片上传成功
           success: function (result) {
             if (result.code == 1) {
-              $('.preview').append('<div><img src="' + result.imgurl + '" ><code class="title1">' + result
+              $('.preview').append('<div><img src="' + result.imgurl + '" ><br><code class="title1">' + result
                 .imgurl + '</code></div>');
             } else {
               layer.msg('第' + j + '个图片上传失败');
@@ -323,7 +326,7 @@
           imgurl: UrlArr[j]
         }, function (result, textStatus) {
           if (result.code == 1) {
-            $('.preview').append('<div><img src="' + result.imgurl + '" ><code class="title1">' + result.imgurl +
+            $('.preview').append('<div><img src="' + result.imgurl + '" ><br><code class="title1">' + result.imgurl +
               '</code></div>');
           } else {
             layer.msg('第' + j + '个图片上传失败');

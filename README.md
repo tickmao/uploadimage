@@ -5,9 +5,9 @@ A simple web  for uploading images
 
 ## 效果图
 
-站点效果如下，可以点击查看![demo](https://uploadimage.tickmao.com/)
+站点效果如下，可以点击查看[demo](https://uploadimage.tickmao.com/)
 
-![预览](https://i.loli.net/2021/02/22/t8Zxou1PAgB9mcG.png))
+![预览](https://i.loli.net/2021/02/22/t8Zxou1PAgB9mcG.png)
 
 ## 声明
 

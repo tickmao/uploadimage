@@ -1,9 +1,8 @@
 /**
- * 阿里图床上传 (修正版)
- * @author: 学习
- * @link: https://tickmao.com
+ * 阿里图床上传（修正版）
+ * 修复：复制按钮点击后触发文件选择框 & 优化提示系统
+ * @author 
  * @version: 1.3
- * 2025.10.17 Tickmao 修复复制按钮与兼容问题
  */
 
 const droppable = document.querySelector(".droppable");
@@ -24,6 +23,7 @@ const formatBytes = (bytes, decimals = 2) => {
 
 let isDragging = 0;
 
+// 拖拽相关事件
 document.addEventListener("dragover", e => {
   e.preventDefault();
   isDragging++;
@@ -36,9 +36,7 @@ document.addEventListener("drop", e => {
   droppable.classList.remove("is-dragging");
 });
 
-list.addEventListener("dragover", e => {
-  e.preventDefault();
-});
+list.addEventListener("dragover", e => e.preventDefault());
 
 const dragtl = gsap.timeline({ paused: true });
 dragtl
@@ -83,7 +81,7 @@ const itemMarkup = (file, url, x, y) => {
       <div class="item-size">SIZE: ${formatBytes(file.size)}</div>
     </div>
     <button class="item-delete" data-id="${id}"></button>
-    <button class="item-url" id="${id}iAjue" disabled onclick="copyToClipboard(this)">复制</button>
+    <button class="item-delete item-url" id="${id}iAjue" disabled onclick="copyToClipboard(event)">复制</button>
   `;
   list.append(item);
 
@@ -100,17 +98,15 @@ const itemMarkup = (file, url, x, y) => {
   image.classList.add("loaded-image");
   image.innerHTML = `
     <img src="${url}"/>
-    <span>
-      <svg fill="#fff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 330">
-        <path d="M165 7.5c-8.284 0-15 6.716-15 15v60c0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15v-60c0-8.284-6.716-15-15-15z"/>
-        <path d="M165 262.5c-8.284 0-15 6.716-15 15v30c0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15v-30c0-8.284-6.716-15-15-15z"/>
-        <path d="M315 157.5h-60c-8.284 0-15 6.716-15 15s6.716 15 15 15h60c8.284 0 15-6.716 15-15s-6.716-15-15-15z"/>
-        <path d="M90 172.5c0-8.284-6.716-15-15-15H15c-8.284 0-15 6.716-15 15s6.716 15 15 15h60c8.284 0 15-6.716 15-15z"/>
-        <path d="M281.673 55.827c-5.857-5.858-15.355-5.858-21.213 0l-42.427 42.427c-5.858 5.858-5.858 15.355 0 21.213 2.929 2.929 6.768 4.394 10.606 4.394 3.839 0 7.678-1.464 10.607-4.394l42.427-42.427c5.858-5.858 5.858-15.355 0-21.213z"/>
-        <path d="M90.753 225.533L48.328 267.96c-5.857 5.858-5.857 15.355 0 21.213 2.929 2.929 6.768 4.393 10.607 4.393 3.839 0 7.678-1.464 10.607-4.393l42.426-42.427c5.857-5.858 5.857-15.355 0-21.213-5.859-5.858-15.356-5.858-21.215 0z"/>
-        <path d="M69.541 55.827c-5.858-5.858-15.355-5.857-21.213 0-5.858 5.858-5.858 15.355 0 21.213l42.426 42.427c2.93 2.929 6.768 4.394 10.607 4.394 3.838 0 7.678-1.465 10.606-4.393 5.858-5.858 5.858-15.355 0-21.213L69.541 55.827z"/>
-      </svg>
-    </span>
+    <span><svg fill="#fff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 330">
+      <path d="M165 7.5c-8.284 0-15 6.716-15 15v60c0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15v-60c0-8.284-6.716-15-15-15z"/>
+      <path d="M165 262.5c-8.284 0-15 6.716-15 15v30c0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15v-30c0-8.284-6.716-15-15-15z"/>
+      <path d="M315 157.5h-60c-8.284 0-15 6.716-15 15s6.716 15 15 15h60c8.284 0 15-6.716 15-15s-6.716-15-15-15z"/>
+      <path d="M90 172.5c0-8.284-6.716-15-15-15H15c-8.284 0-15 6.716-15 15s6.716 15 15 15h60c8.284 0 15-6.716 15-15z"/>
+      <path d="M281.673 55.827c-5.857-5.858-15.355-5.858-21.213 0l-42.427 42.427c-5.858 5.858-5.858 15.355 0 21.213 2.929 2.929 6.768 4.394 10.606 4.394 3.839 0 7.678-1.464 10.607-4.394l42.427-42.427c5.858-5.858 5.858-15.355 0-21.213z"/>
+      <path d="M90.753 225.533L48.328 267.96c-5.857 5.858-5.857 15.355 0 21.213 2.929 2.929 6.768 4.393 10.607 4.393 3.839 0 7.678-1.464 10.607-4.393l42.426-42.427c5.857-5.858 5.857-15.355 0-21.213-5.859-5.858-15.356-5.858-21.215 0z"/>
+      <path d="M69.541 55.827c-5.858-5.858-15.355-5.857-21.213 0-5.858 5.858-5.858 15.355 0 21.213l42.426 42.427c2.93 2.929 6.768 4.394 10.607 4.394 3.838 0 7.678-1.465 10.606-4.393 5.858-5.858 5.858-15.355 0-21.213L69.541 55.827z"/>
+    </svg></span>
   `;
   list.append(image);
 
@@ -126,23 +122,21 @@ const itemMarkup = (file, url, x, y) => {
   const loadedImg = image.querySelector("img");
   const loadedSVG = image.querySelector("span");
 
-  ajax('update.php', file, function(data) {
+  ajax("update.php", file, function (data) {
     data = JSON.parse(data);
-    console.log(data);
-    const itemurlBtn = item.querySelector(".item-url");
-
     if (data.code == 0) {
-      itemurlBtn.setAttribute('data-url', data.msg);
-      itemurlBtn.disabled = false; // 上传成功后启用按钮
+      const itemurlBtn = item.querySelector(".item-url");
+      itemurlBtn.setAttribute("data-url", data.msg);
+      itemurlBtn.disabled = false;
+      showToast("✅ 上传成功");
     } else {
-      alert(data.msg);
+      showToast("❌ " + data.msg, "error");
       item.querySelector(".item-delete").click();
     }
   });
 
   tl.set(droppable, { pointerEvents: "none" })
-    .fromTo(image, { autoAlpha: 1, width: 20, height: 20, x: x - 10, y: y - 10, borderRadius: "50%" },
-      { duration: 0.3, width: 70, height: 70, x: x - 30, y: y - 30 })
+    .fromTo(image, { autoAlpha: 1, width: 20, height: 20, x: x - 10, y: y - 10, borderRadius: "50%" }, { duration: 0.3, width: 70, height: 70, x: x - 30, y: y - 30 })
     .to(loadedSVG, { autoAlpha: 1, duration: 0.4 }, "loading")
     .to(image, { rotation: 720, duration: 1.2 }, "loading")
     .to(loadedSVG, { autoAlpha: 0, duration: 0.4 })
@@ -168,16 +162,19 @@ const deleteItem = e => {
     .to(parent, { height: 0, paddingTop: 0, paddingBottom: 0, duration: 0.5 }, "-=.15");
 };
 
-var inputObj = document.getElementById("_ef");
-list.onclick = function() {
+const inputObj = document.getElementById("_ef");
+list.onclick = function (e) {
+  // 防止点击复制按钮时触发文件选择
+  if (e.target.classList.contains("item-url")) return;
   inputObj.click();
 };
-inputObj.onchange = function() {
-  var file = this.files[0];
+
+inputObj.onchange = function () {
+  const file = this.files[0];
   if (window.FileReader) {
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onloadend = function(e) {
+    reader.onloadend = function (e) {
       itemMarkup(file, e.target.result, 50, 50);
     };
   }
@@ -185,31 +182,31 @@ inputObj.onchange = function() {
 
 function ajax(url, data, fn) {
   const xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function() {
+  xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
       fn(xhr.responseText);
     }
   };
   const formData = new FormData();
-  formData.append('file', data);
+  formData.append("file", data);
   xhr.open("post", url, true);
   xhr.send(formData);
 }
 
-// -------- 复制逻辑（改进版） --------
-function copyToClipboard(btn) {
-  const text = btn.getAttribute('data-url');
+// 修复复制按钮行为 + Toast 提示
+function copyToClipboard(e) {
+  e.stopPropagation();
+  const btn = e.currentTarget;
+  const text = btn.getAttribute("data-url");
   if (!text) {
-    alert('❌ 链接尚未生成，请稍后再试');
+    showToast("❌ 链接尚未生成", "error");
     return;
   }
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('✅ 链接已复制到剪贴板');
-    }).catch(() => {
-      fallbackCopyText(text);
-    });
+    navigator.clipboard.writeText(text)
+      .then(() => showToast("✅ 链接已复制到剪贴板"))
+      .catch(() => fallbackCopyText(text));
   } else {
     fallbackCopyText(text);
   }
@@ -224,9 +221,63 @@ function fallbackCopyText(text) {
   textArea.select();
   try {
     document.execCommand("copy");
-    alert("✅ 链接已复制到剪贴板");
-  } catch (err) {
-    alert("❌ 当前浏览器不支持自动复制，请手动复制");
+    showToast("✅ 链接已复制到剪贴板");
+  } catch {
+    showToast("❌ 浏览器不支持复制", "error");
   }
   document.body.removeChild(textArea);
 }
+
+/* Toast 提示系统 */
+function showToast(message, type = "success") {
+  let container = document.querySelector(".toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  setTimeout(() => toast.classList.add("show"), 50);
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
+}
+
+const style = document.createElement("style");
+style.innerHTML = `
+.toast-container {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.toast {
+  background: rgba(0,0,0,.85);
+  color: #fff;
+  font-size: 14px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin-top: 8px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+.toast-error {
+  background: rgba(220, 38, 38, 0.9);
+}
+`;
+document.head.appendChild(style);

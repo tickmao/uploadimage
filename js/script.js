@@ -1,14 +1,12 @@
 /**
  * 阿里图床上传
- * @author: 学习
- * @link: https://tickmao.com
- * @version: 1.2 (Tickmao 修复版)
-**/
+ * @author: Tickmao
+ * @version: 1.3 (Tickmao 修复版)
+ */
 
 const droppable = document.querySelector(".droppable");
 const list = document.querySelector(".list");
 const ball = document.querySelector(".ball");
-const filledBall = document.querySelector(".filled-ball");
 const hand = document.querySelector(".hand");
 const reader = new FileReader();
 
@@ -36,8 +34,9 @@ document.addEventListener("drop", e => {
 list.addEventListener("dragover", e => e.preventDefault());
 
 const dragtl = gsap.timeline({ paused: true });
-dragtl.to(ball, { duration: 0.4, translateX: "286px", autoAlpha: 1, translateY: "-230px" }, "drag")
-      .to(hand, { duration: 0.4, transformOrigin: "right", rotate: "66deg", translateY: "70px", translateX: "-20px" }, "drag");
+dragtl
+  .to(ball, { duration: 0.4, translateX: "286px", autoAlpha: 1, translateY: "-230px" }, "drag")
+  .to(hand, { duration: 0.4, transformOrigin: "right", rotate: "66deg", translateY: "70px", translateX: "-20px" }, "drag");
 
 list.addEventListener("dragenter", e => {
   e.preventDefault();
@@ -89,33 +88,15 @@ const itemMarkup = (file, url, x, y) => {
     deleteItem(e);
   });
 
-  const itemImage = item.querySelector(".item-img");
-  const imageLeft = itemImage.offsetLeft;
-  const imageTop = itemImage.offsetTop;
-  const image = document.createElement("div");
-  image.classList.add("loaded-image");
-  image.innerHTML = `
-    <img src="${url}"/>
-    <span>
-      <svg fill="#fff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 330">
-        <path d="M165 7.5c-8.284 0-15 6.716-15 15v60c0 8.284 6.716 15 15 15
-        8.284 0 15-6.716 15-15v-60c0-8.284-6.716-15-15-15z"/>
-        <path d="M165 262.5c-8.284 0-15 6.716-15 15v30c0 8.284 6.716 15
-        15 15 8.284 0 15-6.716 15-15v-30c0-8.284-6.716-15-15-15z"/>
-      </svg>
-    </span>`;
-  list.append(image);
-
+  // 上传文件
   ajax('update.php', file, function(data) {
     data = JSON.parse(data);
+    const itemurlBtn = item.querySelector(".item-url");
     if (data.code == 0) {
-      const itemurlBtn = item.querySelector(".item-url");
       itemurlBtn.setAttribute('data-url', data.msg);
-      itemurlBtn.addEventListener('click', function(e) {
-        e.stopImmediatePropagation(); // ✅ 防止触发 list.onclick
-      });
+      itemurlBtn.classList.add("ready"); // ✅ 标记上传完成
     } else {
-      alert(data.msg);
+      showToast(data.msg);
       item.querySelector(".item-delete").click();
     }
   });
@@ -131,12 +112,15 @@ const deleteItem = e => {
       if (!item) dragtl.reverse();
     }
   });
-  deletetl.to(children, { autoAlpha: 0, y: -10, duration: 0.2, stagger: 0.1 })
-          .to(parent, { height: 0, paddingTop: 0, paddingBottom: 0, duration: 0.5 }, "-=.15");
+  deletetl
+    .to(children, { autoAlpha: 0, y: -10, duration: 0.2, stagger: 0.1 })
+    .to(parent, { height: 0, paddingTop: 0, paddingBottom: 0, duration: 0.5 }, "-=.15");
 };
 
 var inputObj = document.getElementById("_ef");
-list.onclick = function() {
+list.onclick = function(e) {
+  // ✅ 避免点击复制按钮触发选择文件
+  if (e.target.classList.contains("item-url")) return;
   inputObj.click();
 };
 
@@ -154,9 +138,7 @@ inputObj.onchange = function() {
 function ajax(url, data, fn) {
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      fn(xhr.responseText);
-    }
+    if (xhr.readyState === 4 && xhr.status === 200) fn(xhr.responseText);
   };
   const formData = new FormData();
   formData.append('file', data);
@@ -164,19 +146,54 @@ function ajax(url, data, fn) {
   xhr.send(formData);
 }
 
+// ✅ 新版复制逻辑 + 状态提示
 function copyToClipboard(btn) {
   const text = btn.getAttribute('data-url');
+  if (!btn.classList.contains("ready")) {
+    showToast("图片正在上传中，请稍后再试");
+    return;
+  }
+  if (!text) {
+    showToast("未找到上传链接");
+    return;
+  }
+
   const textArea = document.createElement("textarea");
   textArea.value = text;
-  textArea.style.position = 'fixed';
-  textArea.style.opacity = '0';
   document.body.appendChild(textArea);
   textArea.select();
+
   try {
     document.execCommand('copy');
-    alert('链接已复制到剪贴板');
+    showToast("✅ 链接已复制到剪贴板");
   } catch (err) {
-    alert('该浏览器不支持点击复制到剪贴板');
+    showToast("❌ 浏览器不支持复制");
   }
+
   document.body.removeChild(textArea);
+}
+
+// ✅ 轻量 toast 提示
+function showToast(msg) {
+  const toast = document.createElement("div");
+  toast.textContent = msg;
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.left = "50%";
+  toast.style.transform = "translateX(-50%)";
+  toast.style.background = "rgba(0,0,0,0.7)";
+  toast.style.color = "#fff";
+  toast.style.padding = "8px 16px";
+  toast.style.borderRadius = "6px";
+  toast.style.fontSize = "14px";
+  toast.style.zIndex = "9999";
+  toast.style.opacity = "0";
+  toast.style.transition = "opacity 0.3s ease";
+  document.body.appendChild(toast);
+
+  setTimeout(() => (toast.style.opacity = "1"), 50);
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    setTimeout(() => toast.remove(), 500);
+  }, 2000);
 }

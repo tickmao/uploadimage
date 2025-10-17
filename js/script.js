@@ -1,9 +1,9 @@
 /**
- * 阿里图床上传（修正版）
- * 修复：复制按钮点击后触发文件选择框 & 优化提示系统
- * @author 
- * @version: 1.3
- */
+ * 阿里图床上传
+ * @author: 学习
+ * @link: https://tickmao.com
+ * @version: 1.2 (Tickmao 修复版)
+**/
 
 const droppable = document.querySelector(".droppable");
 const list = document.querySelector(".list");
@@ -16,20 +16,17 @@ const formatBytes = (bytes, decimals = 2) => {
   if (bytes === 0) return "0 Bytes";
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
 };
 
 let isDragging = 0;
-
-// 拖拽相关事件
 document.addEventListener("dragover", e => {
   e.preventDefault();
   isDragging++;
   if (isDragging === 1) droppable.classList.add("is-dragging");
 });
-
 document.addEventListener("drop", e => {
   e.preventDefault();
   isDragging = 0;
@@ -39,16 +36,14 @@ document.addEventListener("drop", e => {
 list.addEventListener("dragover", e => e.preventDefault());
 
 const dragtl = gsap.timeline({ paused: true });
-dragtl
-  .to(ball, { duration: 0.4, translateX: "286px", autoAlpha: 1, translateY: "-230px" }, "drag")
-  .to(hand, { duration: 0.4, transformOrigin: "right", rotate: "66deg", translateY: "70px", translateX: "-20px" }, "drag");
+dragtl.to(ball, { duration: 0.4, translateX: "286px", autoAlpha: 1, translateY: "-230px" }, "drag")
+      .to(hand, { duration: 0.4, transformOrigin: "right", rotate: "66deg", translateY: "70px", translateX: "-20px" }, "drag");
 
 list.addEventListener("dragenter", e => {
   e.preventDefault();
   droppable.classList.add("is-over");
   dragtl.play();
 });
-
 list.addEventListener("dragleave", e => {
   e.preventDefault();
   droppable.classList.remove("is-over");
@@ -74,14 +69,17 @@ const itemMarkup = (file, url, x, y) => {
   const id = Math.random().toString(36).substr(2, 9);
   item.classList.add("item");
   item.setAttribute("id", id);
+
   item.innerHTML = `
     <div class="item-img"><img src="${url}"/></div>
     <div class="item-details">
       <div class="item-name">${file.name}</div>
-      <div class="item-size">SIZE: ${formatBytes(file.size)}</div>
+      <div class="item-size">SIZE:${formatBytes(file.size)}</div>
     </div>
     <button class="item-delete" data-id="${id}"></button>
-    <button class="item-delete item-url" id="${id}iAjue" disabled onclick="copyToClipboard(event)">复制</button>
+    <button class="item-delete item-url" id="${id}iAjue" onclick="copyToClipboard(this)">
+      复制
+    </button>
   `;
   list.append(item);
 
@@ -98,54 +96,29 @@ const itemMarkup = (file, url, x, y) => {
   image.classList.add("loaded-image");
   image.innerHTML = `
     <img src="${url}"/>
-    <span><svg fill="#fff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 330">
-      <path d="M165 7.5c-8.284 0-15 6.716-15 15v60c0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15v-60c0-8.284-6.716-15-15-15z"/>
-      <path d="M165 262.5c-8.284 0-15 6.716-15 15v30c0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15v-30c0-8.284-6.716-15-15-15z"/>
-      <path d="M315 157.5h-60c-8.284 0-15 6.716-15 15s6.716 15 15 15h60c8.284 0 15-6.716 15-15s-6.716-15-15-15z"/>
-      <path d="M90 172.5c0-8.284-6.716-15-15-15H15c-8.284 0-15 6.716-15 15s6.716 15 15 15h60c8.284 0 15-6.716 15-15z"/>
-      <path d="M281.673 55.827c-5.857-5.858-15.355-5.858-21.213 0l-42.427 42.427c-5.858 5.858-5.858 15.355 0 21.213 2.929 2.929 6.768 4.394 10.606 4.394 3.839 0 7.678-1.464 10.607-4.394l42.427-42.427c5.858-5.858 5.858-15.355 0-21.213z"/>
-      <path d="M90.753 225.533L48.328 267.96c-5.857 5.858-5.857 15.355 0 21.213 2.929 2.929 6.768 4.393 10.607 4.393 3.839 0 7.678-1.464 10.607-4.393l42.426-42.427c5.857-5.858 5.857-15.355 0-21.213-5.859-5.858-15.356-5.858-21.215 0z"/>
-      <path d="M69.541 55.827c-5.858-5.858-15.355-5.857-21.213 0-5.858 5.858-5.858 15.355 0 21.213l42.426 42.427c2.93 2.929 6.768 4.394 10.607 4.394 3.838 0 7.678-1.465 10.606-4.393 5.858-5.858 5.858-15.355 0-21.213L69.541 55.827z"/>
-    </svg></span>
-  `;
+    <span>
+      <svg fill="#fff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 330">
+        <path d="M165 7.5c-8.284 0-15 6.716-15 15v60c0 8.284 6.716 15 15 15
+        8.284 0 15-6.716 15-15v-60c0-8.284-6.716-15-15-15z"/>
+        <path d="M165 262.5c-8.284 0-15 6.716-15 15v30c0 8.284 6.716 15
+        15 15 8.284 0 15-6.716 15-15v-30c0-8.284-6.716-15-15-15z"/>
+      </svg>
+    </span>`;
   list.append(image);
 
-  const tl = gsap.timeline({
-    onComplete: () => {
-      image.remove();
-      itemImage.style.opacity = 1;
-      list.scrollTo(0, list.scrollHeight);
-    }
-  });
-
-  const itemChildren = item.querySelectorAll("*:not(.item-img)");
-  const loadedImg = image.querySelector("img");
-  const loadedSVG = image.querySelector("span");
-
-  ajax("update.php", file, function (data) {
+  ajax('update.php', file, function(data) {
     data = JSON.parse(data);
     if (data.code == 0) {
       const itemurlBtn = item.querySelector(".item-url");
-      itemurlBtn.setAttribute("data-url", data.msg);
-      itemurlBtn.disabled = false;
-      showToast("✅ 上传成功");
+      itemurlBtn.setAttribute('data-url', data.msg);
+      itemurlBtn.addEventListener('click', function(e) {
+        e.stopImmediatePropagation(); // ✅ 防止触发 list.onclick
+      });
     } else {
-      showToast("❌ " + data.msg, "error");
+      alert(data.msg);
       item.querySelector(".item-delete").click();
     }
   });
-
-  tl.set(droppable, { pointerEvents: "none" })
-    .fromTo(image, { autoAlpha: 1, width: 20, height: 20, x: x - 10, y: y - 10, borderRadius: "50%" }, { duration: 0.3, width: 70, height: 70, x: x - 30, y: y - 30 })
-    .to(loadedSVG, { autoAlpha: 1, duration: 0.4 }, "loading")
-    .to(image, { rotation: 720, duration: 1.2 }, "loading")
-    .to(loadedSVG, { autoAlpha: 0, duration: 0.4 })
-    .to(loadedImg, { autoAlpha: 1, duration: 0.4 }, "-=.1")
-    .to(image, { x: imageLeft, y: imageTop, duration: 0.8, autoAlpha: 1, width: 60, height: 48, borderRadius: 4 }, "-=.5")
-    .set(itemImage, { autoAlpha: 1 })
-    .fromTo(itemChildren, { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.3, stagger: 0.06 })
-    .to(image, { autoAlpha: 0, duration: 0.3 }, "-=.2")
-    .set(droppable, { pointerEvents: "all" });
 };
 
 const deleteItem = e => {
@@ -159,22 +132,20 @@ const deleteItem = e => {
     }
   });
   deletetl.to(children, { autoAlpha: 0, y: -10, duration: 0.2, stagger: 0.1 })
-    .to(parent, { height: 0, paddingTop: 0, paddingBottom: 0, duration: 0.5 }, "-=.15");
+          .to(parent, { height: 0, paddingTop: 0, paddingBottom: 0, duration: 0.5 }, "-=.15");
 };
 
-const inputObj = document.getElementById("_ef");
-list.onclick = function (e) {
-  // 防止点击复制按钮时触发文件选择
-  if (e.target.classList.contains("item-url")) return;
+var inputObj = document.getElementById("_ef");
+list.onclick = function() {
   inputObj.click();
 };
 
-inputObj.onchange = function () {
-  const file = this.files[0];
+inputObj.onchange = function() {
+  var file = this.files[0];
   if (window.FileReader) {
-    const reader = new FileReader();
+    var reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onloadend = function (e) {
+    reader.onloadend = function(e) {
       itemMarkup(file, e.target.result, 50, 50);
     };
   }
@@ -182,102 +153,30 @@ inputObj.onchange = function () {
 
 function ajax(url, data, fn) {
   const xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function () {
+  xhr.onreadystatechange = function() {
     if (xhr.readyState === 4 && xhr.status === 200) {
       fn(xhr.responseText);
     }
   };
   const formData = new FormData();
-  formData.append("file", data);
+  formData.append('file', data);
   xhr.open("post", url, true);
   xhr.send(formData);
 }
 
-// 修复复制按钮行为 + Toast 提示
-function copyToClipboard(e) {
-  e.stopPropagation();
-  const btn = e.currentTarget;
-  const text = btn.getAttribute("data-url");
-  if (!text) {
-    showToast("❌ 链接尚未生成", "error");
-    return;
-  }
-
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text)
-      .then(() => showToast("✅ 链接已复制到剪贴板"))
-      .catch(() => fallbackCopyText(text));
-  } else {
-    fallbackCopyText(text);
-  }
-}
-
-function fallbackCopyText(text) {
+function copyToClipboard(btn) {
+  const text = btn.getAttribute('data-url');
   const textArea = document.createElement("textarea");
   textArea.value = text;
-  textArea.style.position = "fixed";
-  textArea.style.opacity = "0";
+  textArea.style.position = 'fixed';
+  textArea.style.opacity = '0';
   document.body.appendChild(textArea);
   textArea.select();
   try {
-    document.execCommand("copy");
-    showToast("✅ 链接已复制到剪贴板");
-  } catch {
-    showToast("❌ 浏览器不支持复制", "error");
+    document.execCommand('copy');
+    alert('链接已复制到剪贴板');
+  } catch (err) {
+    alert('该浏览器不支持点击复制到剪贴板');
   }
   document.body.removeChild(textArea);
 }
-
-/* Toast 提示系统 */
-function showToast(message, type = "success") {
-  let container = document.querySelector(".toast-container");
-  if (!container) {
-    container = document.createElement("div");
-    container.className = "toast-container";
-    document.body.appendChild(container);
-  }
-
-  const toast = document.createElement("div");
-  toast.className = `toast toast-${type}`;
-  toast.textContent = message;
-  container.appendChild(toast);
-
-  setTimeout(() => toast.classList.add("show"), 50);
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 300);
-  }, 2500);
-}
-
-const style = document.createElement("style");
-style.innerHTML = `
-.toast-container {
-  position: fixed;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.toast {
-  background: rgba(0,0,0,.85);
-  color: #fff;
-  font-size: 14px;
-  padding: 10px 16px;
-  border-radius: 6px;
-  margin-top: 8px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.3s ease;
-}
-.toast.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-.toast-error {
-  background: rgba(220, 38, 38, 0.9);
-}
-`;
-document.head.appendChild(style);
